@@ -11,7 +11,7 @@ git clone git@github.com:matthewnitschke/pubspec_lock_merge_driver.git ~/pubspec
 
 In your `~/.gitconfig` file add the following:
 
-```toml
+```
 [merge "pubspec-lock-driver"]
     name = Custom merge driver for pubspec.lock files
     driver = ~/pubspec_lock_merge_driver/pubspec-lock-merge-driver.sh %O %A %B
