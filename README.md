@@ -4,9 +4,9 @@ A git [merge driver](https://git-scm.com/docs/gitattributes#_defining_a_custom_m
 
 # Installation
 
-First clone this repo to a good location
+First install from pub
 ```
-git clone git@github.com:matthewnitschke/pubspec_lock_merge_driver.git ~/pubspec_lock_merge_driver
+dart pub global activate pubspec_lock_merge_driver
 ```
 
 In your `~/.gitconfig` file add the following:
@@ -14,7 +14,7 @@ In your `~/.gitconfig` file add the following:
 ```
 [merge "pubspec-lock-driver"]
     name = Custom merge driver for pubspec.lock files
-    driver = ~/pubspec_lock_merge_driver/pubspec-lock-merge-driver.sh %O %A %B
+    driver = pubspec_lock_merge_driver $(cat %A) $(cat %B) > %A
 ```
 
 Finally in your `~/.gitattributes` file (create one if it doesn't exist). Add the following:
