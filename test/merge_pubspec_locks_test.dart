@@ -21,6 +21,10 @@ Package _buildTestPackage({
   );
 }
 
+final _testPathDesc = PathPackageDescription(path: './path', relative: true);
+final _testGitDesc = GitPackageDescription(path: './', ref: 'root', resolvedRef: 'abcd', url: 'http');
+final _testHostedDesc =  HostedPackageDescription(name: 'test', url: 'someUrl');
+
 void main() {
   group('mergePubspecLocks', () {
     test('merges non-duplicated packages', () {
@@ -40,25 +44,152 @@ void main() {
       final actual =  mergePubspecLocks(
         PubspecLock(sdks: {}, packages: {
           'depA': _buildTestPackage(
-            packageDescription: PathPackageDescription(path: './path', relative: true)
+            packageDescription: _testPathDesc,
+            version: '2.0.0'
           )
         }),
         PubspecLock(sdks: {}, packages: {
-          'depA': _buildTestPackage()
+          'depA': _buildTestPackage(
+            packageDescription: _testHostedDesc,
+            version: '1.2.1'
+          )
         }),
       ).packages;
+
+      expect(actual.length, 1);
+
+      expect(actual.values.first.description, isA<PathPackageDescription>());
+      expect(actual.values.first.version.toString(), '2.0.0');
     });
     
-    test('chooses path package over git package', () {});
+    test('chooses path package over git package', () {
+      final actual =  mergePubspecLocks(
+        PubspecLock(sdks: {}, packages: {
+          'depA': _buildTestPackage(
+            packageDescription: _testPathDesc,
+            version: '2.0.0'
+          )
+        }),
+        PubspecLock(sdks: {}, packages: {
+          'depA': _buildTestPackage(
+            packageDescription: _testGitDesc,
+            version: '1.2.1'
+          )
+        }),
+      ).packages;
 
-    test('chooses git package over hosted package', () {});
+      expect(actual.length, 1);
 
-    test('chooses latest path version', () { });
+      expect(actual.values.first.description, isA<PathPackageDescription>());
+      expect(actual.values.first.version.toString(), '2.0.0');
+    });
+
+    test('chooses git package over hosted package', () {
+      final actual =  mergePubspecLocks(
+        PubspecLock(sdks: {}, packages: {
+          'depA': _buildTestPackage(
+            packageDescription: _testGitDesc,
+            version: '1.2.1'
+          )
+        }),
+        PubspecLock(sdks: {}, packages: {
+          'depA': _buildTestPackage(
+            packageDescription: _testHostedDesc,
+            version: '2.0.0'
+          )
+        }),
+      ).packages;
+
+      expect(actual.length, 1);
+
+      expect(actual.values.first.description, isA<GitPackageDescription>());
+      expect(actual.values.first.version.toString(), '1.2.1');
+    });
+
+    test('chooses latest path version', () {
+      final actual =  mergePubspecLocks(
+        PubspecLock(sdks: {}, packages: {
+          'depA': _buildTestPackage(
+            packageDescription: _testPathDesc,
+            version: '1.2.1'
+          )
+        }),
+        PubspecLock(sdks: {}, packages: {
+          'depA': _buildTestPackage(
+            packageDescription: _testPathDesc,
+            version: '2.9.0'
+          )
+        }),
+      ).packages;
+
+      expect(actual.length, 1);
+      expect(actual.values.first.version.toString(), '2.9.0');
+    });
     
-    test('chooses latest git version', () { });
+    test('chooses latest git version', () {
+       final actual =  mergePubspecLocks(
+        PubspecLock(sdks: {}, packages: {
+          'depA': _buildTestPackage(
+            packageDescription: _testGitDesc,
+            version: '2.9.0'
+          )
+        }),
+        PubspecLock(sdks: {}, packages: {
+          'depA': _buildTestPackage(
+            packageDescription: _testGitDesc,
+            version: '1.2.1'
+          )
+        }),
+      ).packages;
 
-    test('chooses latest hosted version', () { });
+      expect(actual.length, 1);
+      expect(actual.values.first.version.toString(), '2.9.0');
+    });
 
-    
+    test('chooses latest hosted version', () {
+      final actual =  mergePubspecLocks(
+        PubspecLock(sdks: {}, packages: {
+          'depA': _buildTestPackage(
+            packageDescription: _testHostedDesc,
+            version: '2.9.0'
+          )
+        }),
+        PubspecLock(sdks: {}, packages: {
+          'depA': _buildTestPackage(
+            packageDescription: _testHostedDesc,
+            version: '1.2.1'
+          )
+        }),
+      ).packages;
+
+      expect(actual.length, 1);
+      expect(actual.values.first.version.toString(), '2.9.0');
+    });
+
+    test('fails on sdk differences', () {
+      expect(() => mergePubspecLocks(
+        PubspecLock(sdks: {
+          'environment': VersionConstraint.parse('>=1.0.0 <2.0.0'),
+        }, packages: {}),
+        PubspecLock(sdks: {
+          'environment': VersionConstraint.parse('>=1.2.0 <2.0.0'),
+        }, packages: {}),
+      ), throwsException,);
+    });
+
+    test('fails on description differences', () {
+      expect(() => mergePubspecLocks(
+        PubspecLock(sdks: {}, packages: {
+          'depA': _buildTestPackage(
+            packageDescription: PathPackageDescription(path: 'somewhere', relative: false)
+          )
+        }),
+        PubspecLock(sdks: {}, packages: {
+          'depA': _buildTestPackage(
+            packageDescription: PathPackageDescription(path: 'somewhere/different', relative: false)
+          )
+        }),
+      ), throwsException,);
+    });
   });
 }
