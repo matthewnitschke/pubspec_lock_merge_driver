@@ -1,6 +1,6 @@
 # Pubspec Lock Merge Driver
 
-A git [merge driver](https://git-scm.com/docs/merge-config#Documentation/merge-config.txt-mergeltdrivergtname) for pubspec.lock files
+A git [merge driver](https://git-scm.com/docs/gitattributes#_defining_a_custom_merge_driver) for pubspec.lock files
 
 # Installation
 
