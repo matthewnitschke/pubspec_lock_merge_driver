@@ -6,6 +6,9 @@ repository: https://github.com/matthewnitschke/pubspec_lock_merge_driver
 environment:
   sdk: '>=2.12.0 <3.0.0'
 
+executables: 
+  pubspec_lock_merge_driver: main
+
 dependencies:
   args: ^2.3.1
   json2yaml: ^3.0.0
