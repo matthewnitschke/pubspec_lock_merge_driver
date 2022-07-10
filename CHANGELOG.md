@@ -1,3 +1,4 @@
-## 1.0.0
+## 0.1.0
 
-- Initial release
+- Alpha release
+    - spike of implementation, not fully trusted yet
