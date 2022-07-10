@@ -4,25 +4,33 @@ A git [merge driver](https://git-scm.com/docs/gitattributes#_defining_a_custom_m
 
 # Installation
 
-First install from pub
+Install/activate package from pub
 ```
 dart pub global activate pubspec_lock_merge_driver
 ```
 
-In your `~/.gitconfig` file add the following:
+Run the merge driver installation script
 
+```
+pubspec_lock_merge driver install
+```
+
+Now, when git sees conflicts within `pubspec.lock` files, it will know how to automatically resolve them based on the following merge strategy
+
+## Manual Installation
+
+In your `~/.gitconfig` file add the following:
 ```
 [merge "pubspec-lock-driver"]
     name = Custom merge driver for pubspec.lock files
     driver = pubspec_lock_merge_driver $(cat %A) $(cat %B) > %A
 ```
 
-Finally in your `~/.gitattributes` file (create one if it doesn't exist). Add the following:
+In your `~/.gitattributes` file (create one if it doesn't exist). Add the following:
 ```
 pubspec.lock merge=pubspec-lock-driver
 ```
 
-Now, when git sees conflicts within `pubspec.lock` files, it will know how to automatically resolve them based on the following merge strategy
 
 # Merge strategy
 
