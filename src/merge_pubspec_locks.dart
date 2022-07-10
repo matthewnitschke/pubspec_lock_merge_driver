@@ -22,9 +22,6 @@ PubspecLock mergePubspecLocks(PubspecLock a, PubspecLock b) {
       final aPackage = a.packages[packageName]!;
       final bPackage = b.packages[packageName]!;
 
-      if (!_arePackageDescriptionsEqual(aPackage.description, bPackage.description)) {
-        throw FormatException();
-      }
 
       final mergedPackage = _choosePriorityPackage<PathPackageDescription>(aPackage, bPackage) 
         ?? _choosePriorityPackage<GitPackageDescription>(aPackage, bPackage)
@@ -41,6 +38,10 @@ PubspecLock mergePubspecLocks(PubspecLock a, PubspecLock b) {
 
 Package? _choosePriorityPackage<T extends PackageDescription>(Package a, Package b) {
   if (a.description is T && b.description is T) {
+    if (!_arePackageDescriptionsEqual(a.description, b.description)) {
+      throw FormatException();
+    }
+
     return Version.prioritize(a.version, b.version) > 0 ? a : b;
   }
   if (a.description is T && b.description is! T) return a;
