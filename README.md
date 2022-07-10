@@ -28,13 +28,14 @@ Now, when git sees conflicts within `pubspec.lock` files, it will know how to au
 
 Given a pubspec.lock file A, and a pubspec.lock file B:
 
-1. If A and B are both `Path` dependencies
-    - use the package with the more recent version
-2. If A is a `Path` dep, and B is not
-    - use A's package
-3. If B is a `Path` dep and A is not
-    - use B's package
-4. Repeat steps 1-3 with `Git` dependencies
-5. Repeat steps 1-3 with `Hosted` dependencies
+For packages found within `A` but not `B` (and `B` but not `A`) the package will be included in the resulting pubspec.lock file
 
-Any packages found within `A` but not `B` (and `B` but not `A`) will be included in the resulting pubspec.lock file
+For each package found in both A and B:
+  1. If A and B are both `Path` dependencies
+      - use the package with the more recent version
+  2. If A is a `Path` dep, and B is not
+      - use A's package
+  3. If B is a `Path` dep and A is not
+      - use B's package
+  4. Repeat steps 1-3 with `Git` dependencies
+  5. Repeat steps 1-3 with `Hosted` dependencies
