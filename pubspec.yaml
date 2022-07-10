@@ -1,5 +1,7 @@
 name: pubspec_lock_merge_driver
-version: 1.0.0
+version: 0.1.0
+description: A custom git merge driver for pubspec.lock files
+repository: https://github.com/matthewnitschke/pubspec_lock_merge_driver
 
 environment:
   sdk: '>=2.12.0 <3.0.0'
