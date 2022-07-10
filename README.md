@@ -15,7 +15,7 @@ Run the merge driver installation script
 pubspec_lock_merge driver install
 ```
 
-Now, when git sees conflicts within `pubspec.lock` files, it will know how to automatically resolve them based on the following merge strategy
+Now, when git sees conflicts within `pubspec.lock` files, it will know how to automatically resolve them based on merge strategy below
 
 ## Manual Installation
 
@@ -51,7 +51,7 @@ For each package found in both A and B:
 
 ## Known limitations
 
-- `sdks` are currently only taken from `A`, and ignored on `B`
-    - the current plan is to take the highest lower bound dependency version, and the highest upper bound. Not sure if that is practical yet
-- If the version and dep type is the same between `A` and `B`, but there happens to be different configuration within the `Description`, `B` will be used
-    - the current plan is to reject this, as it is not automatically mergeable
+- `sdks` versions between `A` and `B` must be identical
+    - if differences are detected, manually merging files is required
+- If the version and dep type is the same between `A` and `B`, but there happens to be different configuration within the `Description`
+    - if differences are detected, manually merging files is required
