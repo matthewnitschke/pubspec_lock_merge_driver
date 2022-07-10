@@ -38,3 +38,10 @@ Given a pubspec.lock file A, and a pubspec.lock file B:
 5. Repeat steps 1-3 with `Hosted` dependencies
 
 Any packages found within `A` but not `B` (and `B` but not `A`) will be included in the resulting pubspec.lock file
+
+## Known limitations
+
+- `sdks` are currently only taken from `A`, and ignored on `B`
+    - the current plan is to take the highest lower bound dependency version, and the highest upper bound. Not sure if that is practical yet
+- If the version and dep type is the same between `A` and `B`, but there happens to be different configuration within the `Description`, `B` will be used
+    - the current plan is to reject this, as it is not automatically mergeable
