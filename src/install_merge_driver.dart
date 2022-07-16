@@ -4,7 +4,6 @@ import 'package:path/path.dart' as p;
 
 /// Thanks to https://github.com/npm/npm-merge-driver, for much of this implementation
 
-
 class InstallCommand extends Command {
   @override
   final name = 'install';
@@ -24,8 +23,8 @@ class InstallCommand extends Command {
 
     final opts = isGlobal ? '--global' : '--local';
 
-    await Process.run('git', ['config', opts, 'merge."$driverName".name', '"automatically merge pub lockfiles"']);
-    await Process.run('git', ['config', opts, 'merge."$driverName".driver', '"pubspec_lock_merge_driver merge \$(cat %A) \$(cat %B) > %A"']);
+    await Process.run('git', ['config', opts, 'merge.$driverName.name', 'automatically merge pub lockfiles']);
+    await Process.run('git', ['config', opts, 'merge.$driverName.driver', 'pubspec_lock_merge_driver merge \$(cat %A) \$(cat %B) > %A']);
 
     final attrFilePath = (await _findAttributesFilePath(isGlobal: isGlobal)).replaceFirst(
       RegExp(r'/^\s*~\//'), 
@@ -55,7 +54,6 @@ class InstallCommand extends Command {
   }
 }
 
-
 class UninstallCommand extends Command {
   @override
   final name = 'uninstall';
@@ -75,7 +73,7 @@ class UninstallCommand extends Command {
 
     final opts = isGlobal ? '--global' : '--local';
 
-    await Process.run('git', ['config', opts, '--remove-section', 'merge."$driverName"']);
+    await Process.run('git', ['config', opts, '--remove-section', 'merge.$driverName']);
 
     final attrFilePath = await _findAttributesFilePath(isGlobal: isGlobal);
     final attrContent = File(attrFilePath).readAsLinesSync();
@@ -106,7 +104,7 @@ Future<String> _findAttributesFilePath({bool isGlobal = false}) async {
     }
   } else {
     final gitDirProc = await Process.run('git', ['rev-parse', '--git-dir']);
-    final gitDir = gitDirProc.stdout as String;
+    final gitDir = (gitDirProc.stdout as String).trim();
     return p.join(gitDir, 'info', 'attributes');
   }
 }
