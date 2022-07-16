@@ -14,17 +14,19 @@ class InstallCommand extends Command {
   InstallCommand() {
     argParser
       ..addFlag('local', defaultsTo: false)
-      ..addOption('driverName', defaultsTo: 'pubspec_merge_driver');
+      ..addOption('driverName', defaultsTo: 'pubspec_merge_driver')
+      ..addOption('driver', defaultsTo: 'pubspec_lock_merge_driver merge \$(cat %A) \$(cat %B) > %A');
   }
 
   Future<void> run() async {
     final isGlobal = !(argResults!['local'] as bool);
     final driverName = argResults!['driverName'] as String;
+    final driver = argResults!['driver'] as String;
 
     final opts = isGlobal ? '--global' : '--local';
 
     await Process.run('git', ['config', opts, 'merge.$driverName.name', 'automatically merge pub lockfiles']);
-    await Process.run('git', ['config', opts, 'merge.$driverName.driver', 'pubspec_lock_merge_driver merge \$(cat %A) \$(cat %B) > %A']);
+    await Process.run('git', ['config', opts, 'merge.$driverName.driver', driver]);
 
     final attrFilePath = (await _findAttributesFilePath(isGlobal: isGlobal)).replaceFirst(
       RegExp(r'/^\s*~\//'), 
