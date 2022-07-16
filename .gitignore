@@ -1,3 +1,5 @@
 .dart_tool
 .vscode
 .packages
+
+test/functional/git_dir
