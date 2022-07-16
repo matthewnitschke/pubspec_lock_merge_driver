@@ -1,3 +1,6 @@
+[![Dart](https://github.com/matthewnitschke/pubspec_lock_merge_driver/actions/workflows/dart.yml/badge.svg)](https://github.com/matthewnitschke/pubspec_lock_merge_driver/actions/workflows/dart.yml)
+[![pub package](https://img.shields.io/pub/v/pubspec_lock_merge_driver.svg)](https://pub.dev/packages/pubspec_lock_merge_driver)
+
 # Pubspec Lock Merge Driver
 
 A git [merge driver](https://git-scm.com/docs/gitattributes#_defining_a_custom_merge_driver) for pubspec.lock files
