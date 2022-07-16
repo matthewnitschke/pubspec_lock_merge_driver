@@ -5,11 +5,11 @@ import 'package:pubspec_lock_parse/pubspec_lock_parse.dart';
 PubspecLock mergePubspecLocks(PubspecLock a, PubspecLock b) {
   a.sdks.forEach((name, versionConstraint) {
     if (!b.sdks.containsKey(name)) {
-      throw PubspecLockMergeException('Pubspec lock sdks not equal');
+      throw PubspecLockMergeException('lockfile sdks are not equal');
     }
 
     if (versionConstraint.toString() != b.sdks[name].toString()) {
-      throw PubspecLockMergeException('Pubspec lock sdks not equal');
+      throw PubspecLockMergeException('lockfile sdks are not equal');
     }
   });
 
@@ -39,7 +39,7 @@ PubspecLock mergePubspecLocks(PubspecLock a, PubspecLock b) {
 Package? _choosePriorityPackage<T extends PackageDescription>(Package a, Package b) {
   if (a.description is T && b.description is T) {
     if (!_arePackageDescriptionsEqual(a.description, b.description)) {
-      throw PubspecLockMergeException('Package descriptions are same type, but have different values');
+      throw PubspecLockMergeException('package descriptions are same type, but have different values');
     }
 
     return Version.prioritize(a.version, b.version) > 0 ? a : b;

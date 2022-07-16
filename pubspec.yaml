@@ -12,6 +12,7 @@ executables:
 dependencies:
   args: ^2.3.1
   json2yaml: ^3.0.0
+  path: ^1.8.2
   pub_semver: ^2.1.1
   pubspec_lock_parse: ^2.1.0
 

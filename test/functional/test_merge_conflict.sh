@@ -16,6 +16,10 @@ pushd . > /dev/null
 
 cd $SCRIPT_DIR/git_dir
 
+echo
+echo "----- Initializing Conflict Environment -----"
+echo
+
 git init
 touch pubspec.lock && git add ./ && git commit -m "initial commit"
 
@@ -37,6 +41,11 @@ git add pubspec.lock && git commit -m "Apply branch_b.lock from parent folder"
 
 # make the conflict happen
 git checkout a
+
+echo
+echo "----- Preforming Merge -----"
+echo
+
 git merge b
 
 popd > /dev/null
