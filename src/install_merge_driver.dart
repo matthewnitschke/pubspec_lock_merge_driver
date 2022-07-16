@@ -1,64 +1,95 @@
 import 'dart:io';
+import 'package:args/command_runner.dart';
 import 'package:path/path.dart' as p;
 
 /// Thanks to https://github.com/npm/npm-merge-driver, for much of this implementation
 
-Future<void> install({
-  required bool isGlobal,
-  required String driverName,
-}) async {
-  final opts = isGlobal ? '--global' : '--local';
 
-  await Process.run('git', ['config', opts, 'merge."$driverName".name', '"automatically merge pub lockfiles"']);
-  await Process.run('git', ['config', opts, 'merge."$driverName".driver', '"pubspec_lock_merge_driver merge \$(cat %A) \$(cat %B) > %A"']);
+class InstallCommand extends Command {
+  @override
+  final name = 'install';
 
-  final attrFilePath = (await _findAttributesFilePath(isGlobal: isGlobal)).replaceFirst(
-    RegExp(r'/^\s*~\//'), 
-    Platform.environment['HOME']!,
-  );
-  await Process.run('mkdir', ['-p', p.dirname(attrFilePath)]); 
+  @override
+  final description = 'installs the merge driver';
 
-  String attrContents = '';
-  try {
-    final re = RegExp('.* merge\\s*=\\s*${driverName}\$');
-    attrContents = File(attrFilePath)
-      .readAsStringSync()
-      .split(RegExp(r'\r?\n'))
-      .where((line) => re.hasMatch(line))
-      .join('\n');
-  } catch(e) {}
-
-  if (attrContents.isNotEmpty && !RegExp(r'[\n\r]$', multiLine: true).hasMatch(attrContents)) {
-    attrContents = '\n';
+  InstallCommand() {
+    argParser
+      ..addFlag('local', defaultsTo: false)
+      ..addOption('driverName', defaultsTo: 'pubspec_merge_driver');
   }
 
-  attrContents += 'pubspec.lock merge=${driverName}\n';
+  Future<void> run() async {
+    final isGlobal = !(argResults!['local'] as bool);
+    final driverName = argResults!['driverName'] as String;
 
-  File(attrFilePath).writeAsStringSync(attrContents);
+    final opts = isGlobal ? '--global' : '--local';
 
-  print('pubspec_lock_merge_driver: $driverName installed to \'git config ${opts}\' and $attrFilePath');
+    await Process.run('git', ['config', opts, 'merge."$driverName".name', '"automatically merge pub lockfiles"']);
+    await Process.run('git', ['config', opts, 'merge."$driverName".driver', '"pubspec_lock_merge_driver merge \$(cat %A) \$(cat %B) > %A"']);
+
+    final attrFilePath = (await _findAttributesFilePath(isGlobal: isGlobal)).replaceFirst(
+      RegExp(r'/^\s*~\//'), 
+      Platform.environment['HOME']!,
+    );
+    await Process.run('mkdir', ['-p', p.dirname(attrFilePath)]); 
+
+    String attrContents = '';
+    try {
+      final re = RegExp('.* merge\\s*=\\s*${driverName}\$');
+      attrContents = File(attrFilePath)
+        .readAsStringSync()
+        .split(RegExp(r'\r?\n'))
+        .where((line) => re.hasMatch(line))
+        .join('\n');
+    } catch(e) {}
+
+    if (attrContents.isNotEmpty && !RegExp(r'[\n\r]$', multiLine: true).hasMatch(attrContents)) {
+      attrContents = '\n';
+    }
+
+    attrContents += 'pubspec.lock merge=${driverName}\n';
+
+    File(attrFilePath).writeAsStringSync(attrContents);
+
+    print('pubspec_lock_merge_driver: $driverName installed to \'git config ${opts}\' and $attrFilePath');
+  }
 }
 
-Future<void> uninstall({
-  required bool isGlobal,
-  required String driverName,
-}) async {
-  final opts = isGlobal ? '--global' : '--local';
 
-  await Process.run('git', ['config', opts, '--remove-section', 'merge."$driverName"']);
+class UninstallCommand extends Command {
+  @override
+  final name = 'uninstall';
 
-  final attrFilePath = await _findAttributesFilePath(isGlobal: isGlobal);
-  final attrContent = File(attrFilePath).readAsLinesSync();
+  @override
+  final description = 'uninstalls the merge driver';
 
-  if (attrContent.isNotEmpty) {
-    final newAttrContent = attrContent
-      .where((line) {
-        final match = RegExp(' merge=(.*)\$', caseSensitive: false).firstMatch(line);
-        return match?.group(1)?.trim() != driverName;
-      })
-      .join('\n');
-    
-    File(attrFilePath).writeAsString(newAttrContent);
+  UninstallCommand() {
+    argParser
+      ..addFlag('local', defaultsTo: false)
+      ..addOption('driverName', defaultsTo: 'pubspec_merge_driver');
+  }
+
+  Future<void> run() async {
+    final isGlobal = !(argResults!['local'] as bool);
+    final driverName = argResults!['driverName'] as String;
+
+    final opts = isGlobal ? '--global' : '--local';
+
+    await Process.run('git', ['config', opts, '--remove-section', 'merge."$driverName"']);
+
+    final attrFilePath = await _findAttributesFilePath(isGlobal: isGlobal);
+    final attrContent = File(attrFilePath).readAsLinesSync();
+
+    if (attrContent.isNotEmpty) {
+      final newAttrContent = attrContent
+        .where((line) {
+          final match = RegExp(' merge=(.*)\$', caseSensitive: false).firstMatch(line);
+          return match?.group(1)?.trim() != driverName;
+        })
+        .join('\n');
+      
+      File(attrFilePath).writeAsString(newAttrContent);
+    }
   }
 }
 
