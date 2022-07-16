@@ -31,20 +31,17 @@ class InstallCommand extends Command {
     await Process.run('git', ['config', opts, 'merge.$driverName.driver', '$driverCommand $driverArgs']);
 
     final attrFilePath = (await _findAttributesFilePath(isGlobal: isGlobal)).replaceFirst(
-      RegExp(r'/^\s*~\//'), 
+      RegExp(r'/^\s*~\//'),
       Platform.environment['HOME']!,
     );
-    await Process.run('mkdir', ['-p', p.dirname(attrFilePath)]); 
+    await Process.run('mkdir', ['-p', p.dirname(attrFilePath)]);
 
     String attrContents = '';
     try {
       final re = RegExp('.* merge\\s*=\\s*${driverName}\$');
-      attrContents = File(attrFilePath)
-        .readAsStringSync()
-        .split(RegExp(r'\r?\n'))
-        .where((line) => re.hasMatch(line))
-        .join('\n');
-    } catch(e) {}
+      attrContents =
+          File(attrFilePath).readAsStringSync().split(RegExp(r'\r?\n')).where((line) => re.hasMatch(line)).join('\n');
+    } catch (e) {}
 
     if (attrContents.isNotEmpty && !RegExp(r'[\n\r]$', multiLine: true).hasMatch(attrContents)) {
       attrContents = '\n';
@@ -83,13 +80,11 @@ class UninstallCommand extends Command {
     final attrContent = File(attrFilePath).readAsLinesSync();
 
     if (attrContent.isNotEmpty) {
-      final newAttrContent = attrContent
-        .where((line) {
-          final match = RegExp(' merge=(.*)\$', caseSensitive: false).firstMatch(line);
-          return match?.group(1)?.trim() != driverName;
-        })
-        .join('\n');
-      
+      final newAttrContent = attrContent.where((line) {
+        final match = RegExp(' merge=(.*)\$', caseSensitive: false).firstMatch(line);
+        return match?.group(1)?.trim() != driverName;
+      }).join('\n');
+
       File(attrFilePath).writeAsString(newAttrContent);
     }
   }
