@@ -1,3 +1,7 @@
+## 1.0.1
+
+- Implemented a safer merge strategy, where different descriptions will throw exceptions. This reduces issues that would occur from conflicting pubspec.yaml files
+
 ## 1.0.0
 
 - Added installation/uninstallation commands
