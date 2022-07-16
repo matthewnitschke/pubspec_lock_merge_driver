@@ -7,25 +7,32 @@ A git [merge driver](https://git-scm.com/docs/gitattributes#_defining_a_custom_m
 
 # Installation
 
-First install from pub
+Install/activate package from pub
 ```
 dart pub global activate pubspec_lock_merge_driver
 ```
 
-In your `~/.gitconfig` file add the following:
+Run the merge driver installation script
 
-```
-[merge "pubspec-lock-driver"]
-    name = Custom merge driver for pubspec.lock files
-    driver = pubspec_lock_merge_driver $(cat %A) $(cat %B) > %A
-```
+```sh
+# install the merge driver globally (will apply to every pubspec.lock file)
+pubspec_lock_merge_driver install
 
-Finally in your `~/.gitattributes` file (create one if it doesn't exist). Add the following:
-```
-pubspec.lock merge=pubspec-lock-driver
+# install the merge driver for a local package (make sure to be at the root of the local `.git` directory)
+pubspec_lock_merge_driver install --local
 ```
 
-Now, when git sees conflicts within `pubspec.lock` files, it will know how to automatically resolve them based on the following merge strategy
+Now, when git sees conflicts within `pubspec.lock` files, it will know how to automatically resolve them based on merge strategy below
+
+# Uninstallation
+You can always uninstall the merge driver using the following command
+
+```sh
+pubspec_lock_merge_driver uninstall
+
+# or for local installs
+pubspec_lock_merge_driver uninstall --local
+```
 
 # Merge strategy
 
@@ -46,7 +53,7 @@ For each package found in both A and B:
 
 ## Known limitations
 
-- `sdks` are currently only taken from `A`, and ignored on `B`
-    - the current plan is to take the highest lower bound dependency version, and the highest upper bound. Not sure if that is practical yet
-- If the version and dep type is the same between `A` and `B`, but there happens to be different configuration within the `Description`, `B` will be used
-    - the current plan is to reject this, as it is not automatically mergeable
+- `sdks` versions between `A` and `B` must be identical
+    - if differences are detected, manually merging files is required
+- If the version and dep type is the same between `A` and `B`, but there happens to be different configuration within the `Description`
+    - if differences are detected, manually merging files is required
