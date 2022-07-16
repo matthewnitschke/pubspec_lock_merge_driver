@@ -3,3 +3,4 @@
 .packages
 
 test/functional/git_dir
+bin/main.exe
