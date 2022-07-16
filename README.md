@@ -11,26 +11,25 @@ dart pub global activate pubspec_lock_merge_driver
 
 Run the merge driver installation script
 
-```
-pubspec_lock_merge driver install
+```sh
+# install the merge driver globally (will apply to every pubspec.lock file)
+pubspec_lock_merge_driver install
+
+# install the merge driver for a local package (make sure to be at the root of the local `.git` directory)
+pubspec_lock_merge_driver install --local
 ```
 
 Now, when git sees conflicts within `pubspec.lock` files, it will know how to automatically resolve them based on merge strategy below
 
-## Manual Installation
+# Uninstallation
+You can always uninstall the merge driver using the following command
 
-In your `~/.gitconfig` file add the following:
-```
-[merge "pubspec-lock-driver"]
-    name = Custom merge driver for pubspec.lock files
-    driver = pubspec_lock_merge_driver $(cat %A) $(cat %B) > %A
-```
+```sh
+pubspec_lock_merge_driver uninstall
 
-In your `~/.gitattributes` file (create one if it doesn't exist). Add the following:
+# or for local installs
+pubspec_lock_merge_driver uninstall --local
 ```
-pubspec.lock merge=pubspec-lock-driver
-```
-
 
 # Merge strategy
 
