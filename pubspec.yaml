@@ -4,7 +4,7 @@ description: A custom git merge driver for pubspec.lock files
 repository: https://github.com/matthewnitschke/pubspec_lock_merge_driver
 
 environment:
-  sdk: '>=2.12.0 <3.0.0'
+  sdk: '>=2.17.5 <3.0.0'
 
 executables: 
   pubspec_lock_merge_driver: main

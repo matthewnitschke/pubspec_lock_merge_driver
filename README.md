@@ -24,6 +24,30 @@ pubspec_lock_merge_driver install --local
 
 Now, when git sees conflicts within `pubspec.lock` files, it will know how to automatically resolve them based on merge strategy below
 
+## Using a lower dart version than 2.17.5
+
+`pubspec_lock_merge_driver` requires the dart version: `2.17.5` to run, this implies that projects utilizing the exec command `pubspec_lock_merge_driver` must also be running `2.17.5`.
+
+There is a workaround that involves compiling an exe of the merge driver, that can be followed here:
+
+```sh
+# clone the repo to a good location
+cd <some/good/location>
+git clone git@github.com:matthewnitschke/pubspec_lock_merge_driver.git
+
+# switch dart versions to the latest (asdf makes this very easy)
+asdf install dart 2.17.5
+asdf shell dart 2.17.5
+
+# compile the dart script
+dart compile pubspec_lock_merge_driver/bin/main.dart
+
+# install the merge driver using the exe instead of the default executable
+pubspec_lock_merge_driver install --driverCommand "<some/good/location>/pubspec_lock_merge_driver/bin/main.exe"
+```
+
+Now the merge driver should work for any dart version, and is running against a compiled executable.
+
 # Uninstallation
 You can always uninstall the merge driver using the following command
 
