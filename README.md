@@ -64,20 +64,15 @@ Given a pubspec.lock file A, and a pubspec.lock file B:
 
 For packages found within `A` but not `B` (and `B` but not `A`) the package will be included in the resulting pubspec.lock file
 
-For each package found in both A and B:
-  1. If A and B are both `Path` dependencies
-      - use the package with the more recent version
-  2. If A is a `Path` dep, and B is not
-      - use A's package
-  3. If B is a `Path` dep and A is not
-      - use B's package
-  4. Repeat steps 1-3 with `Git` dependencies
-  5. Repeat steps 1-3 with `Hosted` dependencies
-
+For each package found in both A and B
+    - if both packages have the same description type (path, git, hosted)
+    - if both packages have the same values in their description
+    - chose the more recent package version, otherwise fail the entire merge
 
 ## Known limitations
 
 - `sdks` versions between `A` and `B` must be identical
     - if differences are detected, manually merging files is required
+- If the dependency has a different description type (path, git, or hosted), the entire merge will fail
 - If the version and dep type is the same between `A` and `B`, but there happens to be different configuration within the `Description`
     - if differences are detected, manually merging files is required
