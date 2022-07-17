@@ -1,6 +1,8 @@
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_lock_parse/pubspec_lock_parse.dart';
 
+import 'utils.dart';
+
 PubspecLock mergePubspecLocks(PubspecLock a, PubspecLock b) {
   a.sdks.forEach((name, versionConstraint) {
     if (!b.sdks.containsKey(name)) {
@@ -12,12 +14,10 @@ PubspecLock mergePubspecLocks(PubspecLock a, PubspecLock b) {
     }
   });
 
-  final duplicateKeys = a.packages.keys.toSet().intersection(b.packages.keys.toSet());
-  final mergedPackages = <String, Package>{...a.packages, ...b.packages}.map((packageName, package) {
-    if (duplicateKeys.contains(packageName)) {
-      final aPackage = a.packages[packageName]!;
-      final bPackage = b.packages[packageName]!;
-
+  final mergedPackages = mergeMaps<String, Package>(
+    a.packages,
+    b.packages,
+    onDuplicate: (aPackage, bPackage) {
       final aPackageDesc = aPackage.description;
       final bPackageDesc = bPackage.description;
 
@@ -29,13 +29,9 @@ PubspecLock mergePubspecLocks(PubspecLock a, PubspecLock b) {
         throw PubspecLockMergeException('package descriptions are same type, but have different values');
       }
 
-      final priorityPackage = Version.prioritize(aPackage.version, bPackage.version) > 0 ? aPackage : bPackage;
-
-      return MapEntry(packageName, priorityPackage);
+      return Version.prioritize(aPackage.version, bPackage.version) > 0 ? aPackage : bPackage;
     }
-
-    return MapEntry(packageName, package);
-  });
+  );
 
   return PubspecLock(sdks: a.sdks, packages: mergedPackages);
 }
