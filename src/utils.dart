@@ -26,13 +26,3 @@ Map<K, V> mergeMaps<K, V>(
     return MapEntry(key, value);
   });
 }
-
-VersionConstraint mergeVersionConstraint(VersionConstraint a, VersionConstraint b) {
-  if (a.runtimeType != b.runtimeType) throw Exception();
-
-  if (a is VersionRange && b is VersionRange) {
-    
-  }
-
-
-}

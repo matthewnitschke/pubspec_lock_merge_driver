@@ -46,7 +46,7 @@ Map<String, VersionConstraint?>? _mergeEnvironment(
     onEqual: (a, b) => mergeMaps(
       a,
       b,
-      onDuplicate:(a, b) => nullableMerge(a, b, onEqual: mergeVersionConstraint),
+      onDuplicate:(a, b) => nullableMerge(a, b, onEqual: _mergeVersionConstraint),
     )
   );
 }
@@ -64,4 +64,16 @@ void _validatePubspecBaseMergeability(Pubspec a, Pubspec b) {
 class PubspecMergeException implements Exception {
   final String reason;
   PubspecMergeException(this.reason);
+}
+
+VersionConstraint _mergeVersionConstraint(VersionConstraint a, VersionConstraint b) {
+  if (a is! VersionRange || b is! VersionRange) throw PubspecMergeException('cannot merge non-version range dependencies');
+
+  if (a.max.toString() != b.max.toString()) throw PubspecMergeException('cannot merge different max versions');
+
+  if (a.min == null || b.min == null) throw PubspecMergeException('cannot merge empty min versions');
+
+  final minVersion = Version.prioritize(a.min!, b.min!) > 0 ? a : b; 
+  return VersionConstraint.parse('${minVersion.toString} ${a.max.toString()}'.trim());
+
 }

@@ -17,7 +17,7 @@ PubspecLock mergePubspecLocks(PubspecLock a, PubspecLock b) {
   final mergedPackages = mergeMaps<String, Package>(
     a.packages,
     b.packages,
-    onDuplicate: (key, aPackage, bPackage) {
+    onDuplicate: (aPackage, bPackage) {
       final aPackageDesc = aPackage.description;
       final bPackageDesc = bPackage.description;
 
@@ -29,9 +29,7 @@ PubspecLock mergePubspecLocks(PubspecLock a, PubspecLock b) {
         throw PubspecLockMergeException('package descriptions are same type, but have different values');
       }
 
-      final priorityPackage = Version.prioritize(aPackage.version, bPackage.version) > 0 ? aPackage : bPackage;
-
-      return MapEntry(key, priorityPackage);
+      return Version.prioritize(aPackage.version, bPackage.version) > 0 ? aPackage : bPackage;
     }
   );
 
